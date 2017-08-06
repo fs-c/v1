@@ -65,6 +65,7 @@ function build (account) {
 
   client.on('error', err => {
     clearInterval(timer)
+    let i = (err.message === 'RateLimitExceeded' ? 30*60*1000 : 2*60*1000)
     log(`Error '${err.message}' catched, retrying in ${(i/1000)/60} minutes.`)
 
     if (err.message === 'LoggedInElsewhere') {
@@ -73,7 +74,6 @@ function build (account) {
         10*60*1000
       )
     } else {
-      let i = (err.message === 'RateLimitExceeded' ? 30*60*1000 : 2*60*1000)
       client.logOff()
       setTimeout(login, i, client)
     }
