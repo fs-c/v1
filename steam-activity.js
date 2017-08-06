@@ -14,7 +14,7 @@ const rs = require('readline').createInterface({
   output: process.stdout
 })
 
-const PATH = 'steamdata.json'
+const PATH = './steamdata.json'
 const GAMES = [730]
 
 let data
