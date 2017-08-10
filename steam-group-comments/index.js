@@ -1,11 +1,13 @@
 const PATH = './comments/'
+const DATA = '../steamdata.json'
 const NAME = 'projectbluestreak'
 
+const log = require('./src/logger.js')
 require('console-stamp')(console, 'HH:MM:ss.l')
 
 const fs = require('fs')
 
-const KEY = require('../../steamdata.json').main.apikey
+const KEY = require(DATA).main.apikey
 const steamid = require('steamidconvert')(KEY)
 
 // TODO: Stop being a lazy fuck and setup a database.
@@ -27,14 +29,14 @@ function add(comment) {
   if (ids.indexOf(comment.id) !== -1) {
     // TODO: Cancel all other callbacks, not like it's going to find
     //       any new comments after this is true.
-    return console.log(`Comment ${comment.id} already logged.`)
+    return log.warn(`Comment ${comment.id} already logged.`)
   }
 
   if (comment.author.vanityURL) {
     steamid.convertVanity(comment.author.vanityURL, (err, res) => {
-      if (err) return
+      if (err) return log.error(`SteamIDConverter`, err)
 
-      console.log(`Converted ${comment.author.vanityURL} to ${res}`)
+      log.info(`Converted ${comment.author.vanityURL} to ${res}`)
 
       comment.author.id = res.toString(10)
       comments.push(comment)
@@ -52,6 +54,6 @@ function add(comment) {
     fs.writeFileSync(PATH + 'comments-slim.json', JSON.stringify(slimComments))
   }
 
-  console.log(`New comment ${comment.id} logged.`)
+  log.info(`New comment ${comment.id} logged.`)
   ids.push(comment.id)
 }
