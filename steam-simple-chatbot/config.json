@@ -1,4 +1,5 @@
 {
+  "minLevel": 10,
   "defaults": {
     "chatResponse": "Hello world.",
     "welcomeMessage": "Welcome, friend."
