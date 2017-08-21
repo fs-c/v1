@@ -42,8 +42,6 @@
           <div class="input-group">
             <input type="number" class="form-control" v-model="rnum">
           </div>
-
-          <button type="submit" class="btn btn-primary" @click.prevent="num = parseInt(rnum, 10)">Submit</button>
         </form>
 
         <div class="alert alert-primary">
@@ -65,11 +63,11 @@
       data: {
         rcount: 100,
         count: 100,
-        rnum: 5,
-        num: 5
+        rnum: 5
       },
       computed: {
-        rows() {
+				num() { return parseInt(this.rnum, 10) },
+				rows() {
           let r = []
           let b = ['Blue', 'Streak']
 
