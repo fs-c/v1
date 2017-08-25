@@ -2,11 +2,6 @@ require('console-stamp')(console, 'HH:MM:ss.l')
 
 const fs = require('fs')
 
-if (process.env.RESET) {
-  fs.writeFileSync(PATH + './processed.json', '[]')
-  fs.writeFileSync(PATH + './countries.json', '{}')
-}
-
 let config = {}
 if (fs.existsSync('./config.json')) {
   config = require('./config')
@@ -16,6 +11,11 @@ if (fs.existsSync('./config.json')) {
 const PATH = config.path || './'
 const RAND = config.rand || true
 const I = config.interval || 10 * 1000
+
+if (process.env.RESET) {
+  fs.writeFileSync(PATH + './processed.json', '[]')
+  fs.writeFileSync(PATH + './countries.json', '{}')
+}
 
 const Community = require('steamcommunity')
 let C = new Community()
