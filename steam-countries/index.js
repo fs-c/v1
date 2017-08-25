@@ -1,11 +1,11 @@
-require('console-stamp')(console, 'HH:MM:ss.l')
+const log = require('./logger')
 
 const fs = require('fs')
 
 let config = {}
 if (fs.existsSync('./config.json')) {
   config = require('./config')
-  console.log(`read config file.`)
+  log.info(`read config file.`)
 } else console.log(`no config file found, using defaults.`)
 
 const PATH = config.path || './'
@@ -30,7 +30,7 @@ let t = 0
 function tick () {
   if (skip > 0) {
     console.log(``)
-    console.log(`skipped tick (${skip + 1}).`)
+    console.warn(`skipped tick (${skip + 1}).`)
     skip--
     return
   }
@@ -38,28 +38,20 @@ function tick () {
   t++
   let item = queue[0]
 
-  console.log(``)
-  console.log(`Begin tick ${t}.`)
-  console.log(``)
-
   if (!processed.includes(item)) {
     // Do work with item, add to processed once finished.
-    console.log(`[${t}] processing ${item} / ${queue.length}.`)
 
     C.getSteamUser(new (Community.SteamID)(item), (err, user) => {
       if (err) {
-        console.error(err)
+        log.error(err)
         // If we get rate limited, wait for 20 minutes.
         if (err.message === 'RateLimitExceeded') skip = (60000 / I) * 20
         return
       }
 
       if (user.privacyState == 'public') {
-        console.log(`[${t}] got steam user ${user.name} (${user.steamID})`)
-
         // We always want a healthy amount of items to work with.
         if (queue.length < 100) {
-          console.log(`[${t}] getting more IDs to work with.`)
           let group = !RAND
           ? (user.primaryGroup || user.groups[0])
           : user.groups[Math.floor(Math.random()*user.groups.length)]
@@ -75,7 +67,7 @@ function tick () {
 
             gotMembers = true
 
-            console.log(`[${t}] got ${members.length} new IDs.`)
+            log.info(`[${t}] got ${members.length} new IDs.`)
             for (let member of members)
               queue.push(member.toString())
           })
@@ -84,7 +76,6 @@ function tick () {
         // Do stuff with the user object.
         if (user.location) {
           let l = parseCountry(user.location)
-          console.log(`[${t}] ${user.name} (${item}) location: ${l}`)
 
           if (data[l]) { data[l]++ } else data[l] = 1
 
@@ -92,16 +83,16 @@ function tick () {
           if (!(t % (60000 / I))) {
             fs.writeFileSync(PATH + 'countries.json', JSON.stringify(data))
             fs.writeFileSync(PATH + 'processed.json', JSON.stringify(processed))
-            console.log(`[${t}] saved data to disk.`)
+            log.info(`[${t}] saved data to disk.`)
           }
 
-        } else console.log(`[${t}] ${user.name} (${item}) has not set a location.`)
+        }
 
-      } else console.log(`[${t}] steam user ${user.name} (${user.steamID}) has a private profile.`)
+      }
     })
 
     processed.push(item)
-  } else console.log(`[${t}] already processed ${item}, skipping this tick.`)
+  }
 
   // Remove it even if it's not yet finished.
   queue.shift()
