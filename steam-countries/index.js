@@ -1,11 +1,11 @@
 require('console-stamp')(console, 'HH:MM:ss.l')
 
+const fs = require('fs')
+
 if (process.env.RESET) {
   fs.writeFileSync(PATH + './processed.json', '[]')
   fs.writeFileSync(PATH + './countries.json', '{}')
 }
-
-const fs = require('fs')
 
 let config = {}
 if (fs.existsSync('./config.json')) {
