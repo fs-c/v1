@@ -1,7 +1,19 @@
 require('console-stamp')(console, 'HH:MM:ss.l')
 
-const RAND = true
-const I = 10 * 1000
+if (process.env.RESET) {
+  fs.writeFileSync(PATH + './processed.json', '[]')
+  fs.writeFileSync(PATH + './countries.json', '{}')
+}
+
+let config = {}
+if (fs.existsSync('./config.json')) {
+  config = require('./config')
+  console.log(`read config file.`)
+} else console.log(`no config file found, using defaults.`)
+
+const PATH = config.path || './'
+const RAND = config.rand || true
+const I = config.interval || 10 * 1000
 
 const fs = require('fs')
 
@@ -17,8 +29,9 @@ let data = require('./countries.json')
 let t = 0
 function tick () {
   if (skip > 0) {
+    console.log(``)
+    console.log(`skipped tick (${skip + 1}).`)
     skip--
-    console.log(`skipped tick (${skip}).`)
     return
   }
 
@@ -31,7 +44,7 @@ function tick () {
 
   if (!processed.includes(item)) {
     // Do work with item, add to processed once finished.
-    console.log(`[${t}] processing ${item}.`)
+    console.log(`[${t}] processing ${item} / ${queue.length}.`)
 
     C.getSteamUser(new (Community.SteamID)(item), (err, user) => {
       if (err) {
@@ -48,8 +61,11 @@ function tick () {
         if (queue.length < 100) {
           console.log(`[${t}] getting more IDs to work with.`)
           let group = !RAND
-            ? (user.primaryGroup || user.groups[0])
-            : user.groups[Math.floor(Math.random()*user.groups.length)]
+          ? (user.primaryGroup || user.groups[0])
+          : user.groups[Math.floor(Math.random()*user.groups.length)]
+
+          let gotMembers = false
+          setTimeout(() => { gotMembers ? 0 : skip++ }, I - 1000)
 
           C.getGroupMembers(group, (err, members) => {
             if (err) {
@@ -57,7 +73,9 @@ function tick () {
               return
             }
 
-            console.log(`[${t}] got ${members.length} new IDs.`)
+            gotMembers = true
+
+            console.log(`[${t}] got ${members.length} new IDs from group ${group.name}.`)
             for (let member of members)
               queue.push(member.toString())
           })
@@ -71,15 +89,15 @@ function tick () {
           if (data[l]) { data[l]++ } else data[l] = 1
 
           // Every minute, save data to disk.
-          if ((t % (60000 / I)) === 0) {
-            fs.writeFileSync('./countries.json', JSON.stringify(data))
-            fs.writeFileSync('./processed.json', JSON.stringify(processed))
+          if (!(t % (60000 / I))) {
+            fs.writeFileSync(PATH + 'countries.json', JSON.stringify(data))
+            fs.writeFileSync(PATH + 'processed.json', JSON.stringify(processed))
             console.log(`[${t}] saved data to disk.`)
           }
 
         } else console.log(`[${t}] ${user.name} (${item}) has not set a location.`)
 
-      } else console.log(`[${t}] steam user ${user.name} (${user.steamID}) has a private profile (what a cunt).`)
+      } else console.log(`[${t}] steam user ${user.name} (${user.steamID}) has a private profile.`)
     })
 
     processed.push(item)
@@ -93,9 +111,7 @@ tick()
 setInterval(tick, I)
 
 function parseCountry (location) {
-  if (location.indexOf(',') === -1) {
-    return location.trim()
-  } else {
-    return location.slice(location.lastIndexOf(',') + 1).trim()
-  }
+  return location.indexOf(',') === -1
+  ? location.trim()
+  : location.slice(location.lastIndexOf(',') + 1).trim()
 }
