@@ -75,7 +75,7 @@ function tick () {
 
             gotMembers = true
 
-            console.log(`[${t}] got ${members.length} new IDs from group ${group.name}.`)
+            console.log(`[${t}] got ${members.length} new IDs.`)
             for (let member of members)
               queue.push(member.toString())
           })
