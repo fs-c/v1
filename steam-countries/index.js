@@ -5,6 +5,8 @@ if (process.env.RESET) {
   fs.writeFileSync(PATH + './countries.json', '{}')
 }
 
+const fs = require('fs')
+
 let config = {}
 if (fs.existsSync('./config.json')) {
   config = require('./config')
@@ -14,8 +16,6 @@ if (fs.existsSync('./config.json')) {
 const PATH = config.path || './'
 const RAND = config.rand || true
 const I = config.interval || 10 * 1000
-
-const fs = require('fs')
 
 const Community = require('steamcommunity')
 let C = new Community()
