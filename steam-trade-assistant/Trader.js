@@ -70,3 +70,16 @@ function Trader (account) {
 }
 
 Trader.prototype.check = function () { this._community.checkConfirmations() }
+
+Trader.prototype.accept = offer => {
+  return new Promise((resolve, reject) => {
+    offer.accept(err => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve()
+        trader.check()
+      }
+    })
+  })
+}
