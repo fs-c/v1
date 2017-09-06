@@ -20,6 +20,9 @@ function Trader (account) {
   })
 
   // Boilerplate.
+  if (fs.existsSync('polldata.json')) this._manager.pollData = require('./polldata.json')
+  this._manager.on('pollData', data => fs.writeFile('polldata.json', JSON.stringify(data), () => {}))
+
   this._client.setOption('promptSteamGuardCode', false)
   this._client.logOn(account)
   this._client.on('error', err => this.emit('clientError', err, Steam.EResult[err.eresult]))
@@ -30,11 +33,7 @@ function Trader (account) {
     else callback(require('readline-sync').question(`${domain ? 'Email' : 'Mobile'} code: `))
   })
 
-  if (fs.existsSync('polldata.json')) this._manager.pollData = require('./polldata.json')
-
-  this._manager.on('pollData', data =>
-    fs.writeFile('polldata.json', JSON.stringify(data), () => {}))
-
+  // Optimally this gets called once per offer (Active -> Accepted||Declined).
   this._manager.on('receivedOfferChanged', (offer, oldState) => {
     log.debug(`offer ${offer.id} changed: ${Manager.ETradeOfferState[oldState]} -> ${Manager.ETradeOfferState[offer.state]}.`)
 
@@ -51,7 +50,7 @@ function Trader (account) {
     this._manager.setCookies(cookies, err => {
       if (err) {
         this.emit('managerError', err)
-        process.exit(1) // This is a fatal error.
+        process.exit(1) // This is a fatal error, couldn't get API.
       } else this.emit('ready')
     })
 
@@ -61,14 +60,14 @@ function Trader (account) {
 
   this._manager.on('newOffer', offer => {
     this._community.getSteamUser(offer.partner, (e, user) => {
+      // We don't really care if this errors or not.
       offer['user'] = user
       this.emit('newOffer', offer)
     })
   })
 }
 
-Trader.prototype.check = function () { this._community.checkConfirmations() }
-
+// Really just a 'promisified' version of the original.
 Trader.prototype.accept = function (offer) {
   return new Promise((resolve, reject) => {
     offer.accept(err => {
@@ -76,7 +75,7 @@ Trader.prototype.accept = function (offer) {
         reject(err)
       } else {
         resolve()
-        this._manager.check()
+        this._community.checkConfirmations()
       }
     })
   })
