@@ -22,16 +22,15 @@ function Trader (account) {
   // Boilerplate.
   this._client.setOption('promptSteamGuardCode', false)
   this._client.logOn(account)
+  this._client.on('error', err => this.emit('clientError', err, Steam.EResult[err.eresult]))
+  this._client.on('loggedOn', () => log.debug(`loggedOn event received by client.`))
   this._client.on('steamGuard', (domain, callback) => {
     log.debug(`steamGuard event received by client.`)
-    if (account.shasec) { require('steam-totp').getAuthCode(account.shasec, (e, code) => callback(code)) }
-    else { callback(require('readline-sync').question(`${domain ? 'Email' : 'Mobile'} code: `)) }
+    if (account.shasec) require('steam-totp').getAuthCode(account.shasec, (e, code) => callback(code))
+    else callback(require('readline-sync').question(`${domain ? 'Email' : 'Mobile'} code: `))
   })
-  this._client.on('error', err => this.emit('clientError', err))
-  this._client.on('loggedOn', () => log.debug(`loggedOn event received by client.`))
 
-  if (fs.existsSync('polldata.json'))
-    this._manager.pollData = require('./polldata.json')
+  if (fs.existsSync('polldata.json')) this._manager.pollData = require('./polldata.json')
 
   this._manager.on('pollData', data =>
     fs.writeFile('polldata.json', JSON.stringify(data), () => {}))
@@ -39,7 +38,7 @@ function Trader (account) {
   this._manager.on('receivedOfferChanged', (offer, oldState) => {
     log.debug(`offer ${offer.id} changed: ${Manager.ETradeOfferState[oldState]} -> ${Manager.ETradeOfferState[offer.state]}.`)
 
-    if (offer.state == Manager.ETradeOfferState.Accepted) {
+    if (offer.state === Manager.ETradeOfferState.Accepted) {
       offer.getExchangeDetails((err, status, initTime, receivedItems, sentItems) => {
         this.emit('offerAccepted', err, status, initTime, receivedItems, sentItems)
       })
@@ -53,7 +52,6 @@ function Trader (account) {
       if (err) {
         this.emit('managerError', err)
         process.exit(1) // This is a fatal error.
-        return
       } else this.emit('ready')
     })
 
@@ -62,7 +60,7 @@ function Trader (account) {
   })
 
   this._manager.on('newOffer', offer => {
-    this._community.getSteamUser(offer.partner, (err, user) => {
+    this._community.getSteamUser(offer.partner, (e, user) => {
       offer['user'] = user
       this.emit('newOffer', offer)
     })
@@ -71,14 +69,14 @@ function Trader (account) {
 
 Trader.prototype.check = function () { this._community.checkConfirmations() }
 
-Trader.prototype.accept = offer => {
+Trader.prototype.accept = function (offer) {
   return new Promise((resolve, reject) => {
     offer.accept(err => {
       if (err) {
         reject(err)
       } else {
         resolve()
-        trader.check()
+        this._manager.check()
       }
     })
   })
