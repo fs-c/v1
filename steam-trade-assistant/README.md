@@ -15,7 +15,7 @@ The following is the documentation of the `Trader` class, exposed by Trader.js.
 
 ## Methods
 
-#### Constructor(account)
+### Constructor(account)
 
 - `account` - An object containing account information.
   - `accountName`
@@ -23,7 +23,7 @@ The following is the documentation of the `Trader` class, exposed by Trader.js.
   - `idsec` - the identity secret of the account, to confirm trades
   - [`shasec`] - the shared secret of the account (this is optional, but very convenient to have)
 
-#### accept(offer)
+### accept(offer)
 
 - `offer` - A `node-steam-tradeoffer-manager` offer object, as returned by the `newOffer` event.
 
@@ -45,28 +45,24 @@ trader.on('newOffer', (offer) => {
 })
 ```
 
-### Errors
-
-#### clientError
+### clientError
 
 - `err` - an `Error` object.
 - `eresult` - the corresponding [EResult](https://github.com/SteamRE/SteamKit/blob/SteamKit_1.6.3/Resources/SteamLanguage/eresult.steamd) enum.
 
 Emitted when an error occurs during logon. Also emitted on fatal disconnect.
 
-#### managerError
+### managerError
 
 - `err` - an `Error` object.
 
 This is a fatal error, emitted when we can't get an API key.
 
-### Manager
-
-#### ready
+### ready
 
 Emitted when the account is logged on and the trader is ready.
 
-#### newOffer
+### newOffer
 
 - `offer` - a `node-steam-tradeoffer-manager` offer object.
 
