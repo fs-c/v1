@@ -8,8 +8,17 @@ This is basically just an abstraction over [node-steam-user](https://github.com/
 [node-steamcommunity](https://github.com/DoctorMcKay/node-steamcommunity) and
 [node-steam-tradeoffer-manager](https://github.com/DoctorMcKay/node-steam-tradeoffer-manager) working in tandem.
 
-The 'heavy lifting' is done in Trader.js, app.js is really just an example
-of using it.
+The 'heavy lifting' is done in Trader.js, __app.js is really just an example
+of using it.__
+
+App.js `require`s a JSON file it takes the accounts from, it's formatted like this:
+```
+{
+  "customAccountName": { account }, 
+  ...
+}
+```
+Where accounts format is as defined in the Trader constructor argument. The path to the file is defined with the DATA_PATH process env variable.
 
 The following is the documentation of the `Trader` class, exposed by Trader.js.
 
