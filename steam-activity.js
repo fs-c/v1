@@ -14,13 +14,12 @@ const rs = require('readline').createInterface({
   output: process.stdout
 })
 
-const PATH = './steamdata.json'
-const GAMES = [730]
+const PATH = '../steamdata.json'
 
 let data
 if (fs.existsSync(PATH)) {
   data = JSON.parse(fs.readFileSync(PATH))
-} else throw 'Steam account data file not found.'
+} else throw new Error('Steam account data file not found.')
 
 function hide (client) {
   client.gamesPlayed([399220, 399080, 399480])
@@ -60,18 +59,18 @@ function build (account) {
   client.on('loggedOn', details => {
     log(`Logged on from ${details.public_ip}.`)
     hide(client)
-    timer = setInterval(hide, 2*60*1000, client)
+    timer = setInterval(hide, 2 * 60 * 1000, client)
   })
 
   client.on('error', err => {
     clearInterval(timer)
-    let i = (err.message === 'RateLimitExceeded' ? 30*60*1000 : 2*60*1000)
-    log(`Error '${err.message}' catched, retrying in ${(i/1000)/60} minutes.`)
+    let i = (err.message === 'RateLimitExceeded' ? 30 * 60 * 1000 : 2 * 60 * 1000)
+    log(`Error '${err.message}' catched, retrying in ${(i / 1000) / 60} minutes.`)
 
     if (err.message === 'LoggedInElsewhere') {
       setTimeout(
-        function() { timer = setInterval(hide, 2*60*1000, client) },
-        10*60*1000
+        function () { timer = setInterval(hide, 2 * 60 * 1000, client) },
+        10 * 60 * 1000
       )
     } else {
       client.logOff()
