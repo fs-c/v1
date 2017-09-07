@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+
+	<style>
+    .jumbotron {
+      margin-top: 2em !important;
+    }
+
+		.card {
+			margin-bottom: 1em !important;
+		}
+
+		.author {
+			font-style: italic;
+			margin: -0.5em 0 1em 0 !important;
+		}
+
+		.card:hover {
+			cursor: pointer;
+		}
+
+		.card form {
+			margin: 1em;
+		}
+
+		.card select {
+			margin-left: 1em;
+		}
+	</style>
+	<title>vue-news</title>
+</head>
+<body>
+  <div id="app" class="container">
+    <div class="jumbotron">
+      <h2 class="display-4">vue-news</h2>
+      <p class="lead">
+				A simple <a href="https://vuejs.org">vuejs</a>
+				app getting and displaying news from global providers using the
+				<a href="https://newsapi.org">News API</a>.
+			</p>
+    </div>
+
+		<div class="container">
+			<div class="card">
+				<form class="form-inline">
+					<div class="form-group">
+				    <label>Choose news site: </label>
+				    <select @change="getArticles()" v-model="source" class="form-control">
+				      <option v-for="s in sources">{{ s }}</option>
+				    </select>
+			  	</div>
+				</form>
+			</div>
+		</div>
+
+    <news-items :articles="articles"></news-items>
+
+		<div class="container">
+			<div class="card">
+				<div class="card-block">
+					<p class="card-text">Built by fsoc with vuejs, twitter bootstrap, axios and the news api. The contents of this site are property of their respective owners.</p>
+				</div>
+			</div>
+		</div>
+  </div>
+
+	<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="https://unpkg.com/vue"></script>
+	<script src="app.js"></script>
+</body>
+</html>
