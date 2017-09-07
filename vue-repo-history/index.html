@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+
+	<link rel='shortcut icon' type='image/x-icon' href='https://assets-cdn.github.com/favicon.ico' />
+
+	<style>
+		h1 {
+			font-size: 28px;
+			font-weight: bold;
+		}
+
+		nav {
+			margin-top: 20px;
+		}
+
+		.form-inline button {
+			margin-left: 1.75em;
+		}
+
+		#app {
+			margin-top: 50px;
+		}
+
+		#infobox { margin-left: 4em; }
+
+		#body {
+			margin-top: 5px;
+			padding: 15px;
+		} #body form {
+				margin-bottom: 1em;
+		}
+	</style>
+
+	<title>vue-repo-history</title>
+</head>
+<body>
+  <div id="app" class="container">
+		<h1>commit history <small>for {{ link | extractRepo }}</small></h1>
+
+		<div class="alert alert-info" v-if="loading">Waiting for GitHub API.</div>
+		<div class="alert alert-danger" v-if="error">Error encountered when fetching data: {{ error }}. Retrying in 10 seconds...</div>
+
+
+		<div class="row" id="body">
+			<div class="list-group col-5">
+				<form class="form-inline">
+					<input v-model="link" type="text" class="form-control col-md-9" placeholder="lw2904/basic-steambot">
+					<button type="submit" class="btn btn-primary" @click.prevent="fetchData">Submit</button>
+				</form>
+
+				<form class="form-inline">
+					<label class="mr-sm-2">Number of commits to load: </label>
+					<input v-model="amount" type="text" class="col-2 form-control" placeholder="6">
+				</form>
+
+				<commit-item v-for="(record, index) in commits" :record="record" :key="index"></commit-item>
+			</div>
+
+			<div class="col-5" id="infobox">
+				<p>
+					Powered by <a href="https://vuejs.org">VueJS</a> and the
+					<a href="https://developer.github.com/v3/">Github API</a>. </br>
+					Using <a href="https://momentjs.com">MomentJS</a> for timestamps.</a>
+				<p>
+
+				<p>CSS by <a href="https://v4-alpha.getbootstrap.com">Bootstrap v4</a>.</p>
+			</div>
+		</div>
+  </div>
+
+	<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+	<script src="https://unpkg.com/vue"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.16.2/axios.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+
+	<script src="app.js"></script>
+</body>
+</html>
