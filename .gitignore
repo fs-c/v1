@@ -88,4 +88,5 @@ $RECYCLE.BIN/
 
 steam-trade-assistant/polldata.json
 
-steam-account-creator/accounts.json
+*/accounts.json
+*/keys.*
