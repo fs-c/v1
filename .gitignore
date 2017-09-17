@@ -85,3 +85,7 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+steam-trade-assistant/polldata.json
+
+steam-account-creator/accounts.json
