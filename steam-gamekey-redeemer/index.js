@@ -19,7 +19,7 @@ for (let line of f) {
 }
 
 let parsedUsed = []
-for (let line of f) {
+for (let line of u) {
   if (line.indexOf('\r') !== -1) line = line.replace('\r', '')
   if (line.indexOf('\t') !== -1) line = line.replace('\t', '')
   parsedUsed.push(line)
@@ -46,7 +46,7 @@ function build (a, i) {
       if (!parsedUsed.includes(key)) {
         bot.redeemKey(key, (res, det) => {
           console.log(`key: ${key}, result: ${Steam.EResult[res]}, details: ${Steam.EPurchaseResult[det]}`)
-          if (res === 1) require('fs').appendFile('used.txt', key)
+          if (res === 1) require('fs').appendFileSync('used.txt', key + '\n')
         })
       } else console.log(`key ${key} already used`)
     }
