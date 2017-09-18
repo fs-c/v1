@@ -45,7 +45,7 @@ function build (a, i) {
     for (let key of keys[i]) {
       if (!parsedUsed.includes(key)) {
         bot.redeemKey(key, (res, det) => {
-          console.log(`key: ${key}, result: ${Steam.EResult[res]}, details: ${Steam.EPurchaseResult[det]}`)
+          console.log(`key: ${key}, result: ${Steam.EResult[res]}, details: ${det}}`)
           if (res === 1) require('fs').appendFileSync('used.txt', key + '\n')
         })
       } else console.log(`key ${key} already used`)
