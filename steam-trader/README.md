@@ -43,7 +43,7 @@ Emitted when the account is logged on and the trader is ready.
 
 ### newOffer
 
-- `offer` - a `node-steam-tradeoffer-manager` offer object.
+- `offer` - a `node-steam-tradeoffer-manager` offer object, with the [user](https://github.com/DoctorMcKay/node-steamcommunity/wiki/CSteamUser) property tacked on.
 
 Emitted when the manager receives a new offer, polling is done with an interval of 15000ms by default.
 
