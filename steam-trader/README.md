@@ -1,36 +1,19 @@
-# Steam Trade Assistant
+# steam-trader
 
-![](https://i.imgur.com/KQprcPM.png)
-
-NodeJS scripts to make trading across several steam accounts easier and faster.
-
-This is basically just an abstraction over [node-steam-user](https://github.com/DoctorMcKay/node-steam-user),
+This is just an abstraction over [node-steam-user](https://github.com/DoctorMcKay/node-steam-user),
 [node-steamcommunity](https://github.com/DoctorMcKay/node-steamcommunity) and
-[node-steam-tradeoffer-manager](https://github.com/DoctorMcKay/node-steam-tradeoffer-manager) working in tandem.
-
-The 'heavy lifting' is done in Trader.js, __app.js is really just an example
-of using it.__
-
-App.js `require`s a JSON file it takes the accounts from, it's formatted like this:
-```
-{
-  "customAccountName": { account }, 
-  ...
-}
-```
-Where accounts format is as defined in the Trader constructor argument. The path to the file is defined with the DATA_PATH process env variable.
-
-The following is the documentation of the `Trader` class, exposed by Trader.js.
+[node-steam-tradeoffer-manager](https://github.com/DoctorMcKay/node-steam-tradeoffer-manager) working in tandem, to
+allow for quick development and setup of simple trading scripts and bots.
 
 ## Methods
 
-### Constructor(account)
+### Constructor
 
 - `account` - An object containing account information.
   - `accountName`
   - `password`
   - `idsec` - the identity secret of the account, to confirm trades
-  - [`shasec`] - the shared secret of the account (this is optional, but very convenient to have)
+  - [`shasec`] - the shared secret of the account. If this is not provided, Trader will ask for your steam guard code on startup.
 
 ### accept(offer)
 
@@ -54,6 +37,16 @@ trader.on('newOffer', (offer) => {
 })
 ```
 
+### ready
+
+Emitted when the account is logged on and the trader is ready.
+
+### newOffer
+
+- `offer` - a `node-steam-tradeoffer-manager` offer object.
+
+Emitted when the manager receives a new offer, polling is done with an interval of 15000ms by default.
+
 ### clientError
 
 - `err` - an `Error` object.
@@ -66,13 +59,3 @@ Emitted when an error occurs during logon. Also emitted on fatal disconnect.
 - `err` - an `Error` object.
 
 This is a fatal error, emitted when we can't get an API key.
-
-### ready
-
-Emitted when the account is logged on and the trader is ready.
-
-### newOffer
-
-- `offer` - a `node-steam-tradeoffer-manager` offer object.
-
-Emitted when the manager receives a new offer, polling is done with an interval of 15000ms by default.
