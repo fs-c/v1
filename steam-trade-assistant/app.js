@@ -1,10 +1,10 @@
 const PATH = process.env.DATA_PATH || '../../steamdata'
 const DATA = require(PATH)
 
-const log = require('./logger')
+const log = require('../logger')
 const rls = require('readline-sync')
 
-const Trader = require('./Trader')
+const Trader = require('../steam-trader/Trader')
 
 for (let name in DATA) {
   if (rls.keyInYN(`Use account ${name}?`)) build(name)
