@@ -4,6 +4,18 @@ const steamtotp = require('steam-totp')
 const DATA = require('../../steamdata')
 const ACCOUNTS = [ 'main' ]
 
+const INTERVAL_HIDE = 5 * 60 * 1000
+const INTERVAL_ERROR = 10 * 60 * 1000
+const INTERVAL_PLAYING = 15 * 60 * 1000
+const INTERVAL_RATELIMIT = 6 * 60 * 60 * 1000
+
+// const INTERVAL = {
+//   hide: 5 * 60 * 1000,
+//   error: 10 * 60 * 1000,
+//   playing: 15 * 60 * 1000,
+//   ratelimit: 6 * 60 * 60* 1000
+// }
+
 const hide = (client) => {
   console.log(`hide called`)
   client.gamesPlayed([])
@@ -39,7 +51,7 @@ const build = (account) => {
   client.on('loggedOn', details => {
     console.log(`loggedOn received`)
     hide(client)
-    timer = setInterval(hide, 60 * 1000, client)
+    timer = setInterval(hide, INTERVAL_HIDE, client)
   })
 
   client.on('error', err => {
@@ -49,11 +61,11 @@ const build = (account) => {
 
     if (err.message === 'LoggedInElsewhere') {
       setTimeout(
-        function() { timer = setInterval(hide, 2 * 60 * 1000, client) },
+        function () { timer = setInterval(hide, INTERVAL_PLAYING, client) },
         10*60*1000
       )
     } else {
-      let i = (err.message === 'RateLimitExceeded' ? 2 * 60 * 60 * 1000 : 2 * 60 * 1000)
+      let i = (err.message === 'RateLimitExceeded' ? INTERVAL_RATELIMIT : INTERVAL_ERROR)
       client.logOff()
       setTimeout(login, i, client)
     }
