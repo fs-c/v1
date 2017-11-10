@@ -4,14 +4,14 @@ const steamtotp = require('steam-totp')
 const DATA = require('../../steamdata')
 const ACCOUNTS = [ 'main' ]
 
-function hide (client) {
+const hide = (client) => {
   console.log(`hide called`)
   client.gamesPlayed([])
   client.gamesPlayed([399220, 399080, 399480])
   client.gamesPlayed([])
 }
 
-function login (client, account) {
+const login = (client, account) => {
   console.log(`login called`)
   client.logOn({
     accountName: account.name,
@@ -19,9 +19,9 @@ function login (client, account) {
   })
 }
 
-function build (account) {
+const build = (account) => {
   console.log(`build called`)
-  let client = new SteamUser()
+  const client = new SteamUser()
 
   client.setOption('promptSteamGuardCode', false)
 
@@ -60,4 +60,5 @@ function build (account) {
   })
 }
 
-for (let name in DATA) { if (ACCOUNTS.includes(name)) build(DATA[name]) }
+for (let name in DATA)
+  if (ACCOUNTS.includes(name)) build(DATA[name])

@@ -1,0 +1,15 @@
+{
+  "name": "steam-clear-activity",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "steam-user": "^3.23.2"
+  }
+}
