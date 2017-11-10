@@ -1,8 +1,10 @@
+const log = require('../logger')
+
 const SteamUser = require('steam-user')
 const steamtotp = require('steam-totp')
 
-const DATA = require('../../steamdata')
 const ACCOUNTS = [ 'main' ]
+const DATA = require('../../steamdata')
 
 const INTERVAL_HIDE = 5 * 60 * 1000
 const INTERVAL_ERROR = 10 * 60 * 1000
@@ -17,14 +19,16 @@ const INTERVAL_RATELIMIT = 6 * 60 * 60 * 1000
 // }
 
 const hide = (client) => {
-  console.log(`hide called`)
+  log.verbose(`hiding games.`)
+
   client.gamesPlayed([])
   client.gamesPlayed([399220, 399080, 399480])
   client.gamesPlayed([])
 }
 
 const login = (client, account) => {
-  console.log(`login called`)
+  log.verbose(`logging in.`)
+
   client.logOn({
     accountName: account.name,
     password: account.password
@@ -32,7 +36,8 @@ const login = (client, account) => {
 }
 
 const build = (account) => {
-  console.log(`build called`)
+  log.verbose(`building ${account}.`)
+
   const client = new SteamUser()
 
   client.setOption('promptSteamGuardCode', false)
@@ -40,7 +45,7 @@ const build = (account) => {
   login(client, account)
 
   client.on('steamGuard', (domain, callback) => {
-    console.log(`steamGuard received`)
+    log.debug(`steamGuard received.`)
     steamtotp.getAuthCode(account.shasec, (err, code, offset, latency) => {
       if (err) console.error(err)
       callback(code)
@@ -49,7 +54,7 @@ const build = (account) => {
 
   let timer
   client.on('loggedOn', details => {
-    console.log(`loggedOn received`)
+    log.debug(`logged on.`)
     hide(client)
     timer = setInterval(hide, INTERVAL_HIDE, client)
   })
@@ -57,7 +62,7 @@ const build = (account) => {
   client.on('error', err => {
     clearInterval(timer)
 
-    console.error('error: ' + err.message || err.msg || err) // Just in case.
+    log.error('error: ' + err.message || err.msg || err)
 
     if (err.message === 'LoggedInElsewhere') {
       setTimeout(
@@ -65,8 +70,9 @@ const build = (account) => {
         10*60*1000
       )
     } else {
-      let i = (err.message === 'RateLimitExceeded' ? INTERVAL_RATELIMIT : INTERVAL_ERROR)
       client.logOff()
+
+      let i = (err.message === 'RateLimitExceeded' ? INTERVAL_RATELIMIT : INTERVAL_ERROR)
       setTimeout(login, i, client)
     }
   })
