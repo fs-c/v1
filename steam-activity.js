@@ -1,4 +1,4 @@
-// By default equires a JSON file with your steam account data,
+// By default requires a JSON file with your steam account data,
 // as defined with the PATH variable.
 // You can just define the accounts object yourself, just make sure
 // to use the correct property names.
