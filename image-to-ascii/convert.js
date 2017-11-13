@@ -10,6 +10,8 @@ const convert = (img, opts) => {
   let ascii = ''
   img = img.resize(opts.height, opts.width)
 
+  img.write(`out${img.getExtension()}`)
+
   for (let y = 0; y < img.bitmap.height; y++) {
     for (let x = 0; x < img.bitmap.width; x++) {
       for (let c = 0; c < opts.cRatio; c++) {
@@ -34,8 +36,8 @@ module.exports = (path, options = {  }) => {
     colors: options.colors || true,
     chars: options.chars   || CHARS,
     cRatio: options.cRatio || 2,
-    width: options.width   || options.height ? Jimp.AUTO : 50,
-    height: options.height || options.width  ? 50 : Jimp.AUTO
+    width: options.width   || options.height ? Jimp.AUTO : process.stdout.rows,
+    height: options.height || options.width  ? process.stdout.columns : Jimp.AUTO
   }
 
   return new Promise((resolve, reject) => {
