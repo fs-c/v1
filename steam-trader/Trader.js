@@ -19,7 +19,7 @@ function Trader (account) {
     language: 'en'
   })
 
-  if (fs.existsSync('polldata.json')) this._manager.pollData = require('./polldata.json')
+  // if (fs.existsSync('./polldata.json')) this._manager.pollData = require('./polldata.json')
 
   this._manager.on('pollData',
     data => fs.writeFile('polldata.json', JSON.stringify(data), () => {}))
