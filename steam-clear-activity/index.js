@@ -11,19 +11,12 @@ const INTERVAL_ERROR = 10 * 60 * 1000
 const INTERVAL_PLAYING = 15 * 60 * 1000
 const INTERVAL_RATELIMIT = 6 * 60 * 60 * 1000
 
-// const INTERVAL = {
-//   hide: 5 * 60 * 1000,
-//   error: 10 * 60 * 1000,
-//   playing: 15 * 60 * 1000,
-//   ratelimit: 6 * 60 * 60* 1000
-// }
-
 const hide = (client) => {
   log.verbose(`hiding games.`)
 
-  client.gamesPlayed([])
-  client.gamesPlayed([399220, 399080, 399480])
-  client.gamesPlayed([])
+  // client.gamesPlayed([  ])
+  client.gamesPlayed([ 399220, 399080, 399480 ])
+  client.gamesPlayed()
 }
 
 const login = (client, account) => {
@@ -36,7 +29,7 @@ const login = (client, account) => {
 }
 
 const build = (account) => {
-  log.verbose(`building ${account}.`)
+  log.verbose(`building ${account.name}.`)
 
   const client = new SteamUser()
 
@@ -54,7 +47,7 @@ const build = (account) => {
 
   let timer
   client.on('loggedOn', details => {
-    log.debug(`logged on.`)
+    log.info(`logged on.`)
     hide(client)
     timer = setInterval(hide, INTERVAL_HIDE, client)
   })
@@ -65,11 +58,18 @@ const build = (account) => {
     log.error('error: ' + err.message || err.msg || err)
 
     if (err.message === 'LoggedInElsewhere') {
+      log.debug(`retrying in ${INTERVAL_PLAYING}ms.`)
+
       setTimeout(
-        function () { timer = setInterval(hide, INTERVAL_PLAYING, client) },
-        10*60*1000
+        function () {
+          log.debug(`timer restart.`)
+          timer = setInterval(hide, INTERVAL_HIDE, client)
+        },
+        INTERVAL_PLAYING
       )
     } else {
+      log.debug(`logging off, restart in ${INTERVAL_RATELIMIT}/${INTERVAL_ERROR}ms`)
+
       client.logOff()
 
       let i = (err.message === 'RateLimitExceeded' ? INTERVAL_RATELIMIT : INTERVAL_ERROR)
@@ -78,5 +78,4 @@ const build = (account) => {
   })
 }
 
-for (let name in DATA)
-  if (ACCOUNTS.includes(name)) build(DATA[name])
+for (const name in DATA) if (ACCOUNTS.includes(name)) build(DATA[name])
