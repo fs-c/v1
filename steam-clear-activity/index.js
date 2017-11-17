@@ -14,7 +14,8 @@ const INTERVAL_RATELIMIT = 6 * 60 * 60 * 1000
 const hide = (client) => {
   log.verbose(`hiding games.`)
 
-  // client.gamesPlayed([  ])
+  client.setPersona(1)
+
   client.gamesPlayed([ 399220, 399080, 399480 ])
   client.gamesPlayed()
 }
@@ -48,6 +49,7 @@ const build = (account) => {
   let timer
   client.on('loggedOn', details => {
     log.info(`logged on.`)
+
     hide(client)
     timer = setInterval(hide, INTERVAL_HIDE, client)
   })
