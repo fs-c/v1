@@ -50,6 +50,8 @@ const build = (account) => {
   client.on('loggedOn', details => {
     log.info(`logged on.`)
 
+    client.setPersona(1)
+
     hide(client)
     timer = setInterval(hide, INTERVAL_HIDE, client)
   })
