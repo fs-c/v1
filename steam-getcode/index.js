@@ -1,0 +1,1 @@
+console.log(require('steam-totp').getAuthCode(require('/home/lw/.steam.json').default.shasec))
