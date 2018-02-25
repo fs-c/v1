@@ -1,3 +1,10 @@
+require('dotenv').config();
+
+const INTERVAL_HIDE = 5 * 60 * 1000;
+const INTERVAL_ERROR = 10 * 60 * 1000;
+const INTERVAL_PLAYING = 15 * 60 * 1000;
+const INTERVAL_RATELIMIT = 6 * 60 * 60 * 1000;
+
 const fs = require('fs');
 const { join } = require('path');
 const log = require('../logger');
@@ -5,22 +12,23 @@ const rls = require('readline-sync');
 const SteamUser = require('steam-user');
 const steamtotp = require('steam-totp');
 
-const accounts = fs.existsSync(join(process.cwd(), 'steam.json'))
-  ? require(join(process.cwd(), 'steam.json'))
-  : fs.existsSync('../../steamdata.json')
-    ? require('../../steamdata')
-    : undefined;
-
-console.log(accounts);
+const home = process.cwd();
+const path = process.env.ACCOUNTS;
+const accounts = path ? (
+  fs.existsSync(path) 
+    ? require(path) 
+    : fs.existsSync(join(home, path))
+      ? require(join(home, path))
+      : undefined
+) : (
+  fs.existsSync(join(home, './steam.json'))
+    ? require(join(home, './steam.json'))
+    : undefined
+);
 
 if (!accounts) {
   throw new Error('Accounts not defined!');
 }
-
-const INTERVAL_HIDE = 5 * 60 * 1000;
-const INTERVAL_ERROR = 10 * 60 * 1000;
-const INTERVAL_PLAYING = 15 * 60 * 1000;
-const INTERVAL_RATELIMIT = 6 * 60 * 60 * 1000;
 
 const hide = (client) => {
   log.verbose(`hiding games`);
@@ -30,7 +38,7 @@ const hide = (client) => {
 }
 
 const login = (client, account) => {
-  log.verbose(`logging in with account ${account.accountName}`);
+  log.verbose(`logging in`);
 
   client.logOn({
     accountName: account.name,
@@ -57,7 +65,7 @@ const build = (account) => {
 
   let timer;
   client.on('loggedOn', details => {
-    log.info(`logged on.`);
+    log.info(`logged on`);
     hide(client);
     timer = setInterval(hide, INTERVAL_HIDE, client);
   });
@@ -72,7 +80,7 @@ const build = (account) => {
 
       setTimeout(
         function () {
-          log.debug(`timer restart.`);
+          log.debug(`timer restart`);
           timer = setInterval(hide, INTERVAL_HIDE, client);
         },
         INTERVAL_PLAYING
