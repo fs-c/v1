@@ -14,7 +14,7 @@ const accounts = fs.existsSync(join(process.cwd(), 'steam.json'))
 console.log(accounts);
 
 if (!accounts) {
-  throw new Error('Accounts not defined!')
+  throw new Error('Accounts not defined!');
 }
 
 const INTERVAL_HIDE = 5 * 60 * 1000;
