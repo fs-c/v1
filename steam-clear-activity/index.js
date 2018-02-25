@@ -14,7 +14,8 @@ const steamtotp = require('steam-totp');
 
 const home = process.cwd();
 const path = process.env.ACCOUNTS;
-const accounts = path ? (
+
+let accounts = path ? (
   fs.existsSync(path) 
     ? require(path) 
     : fs.existsSync(join(home, path))
@@ -26,8 +27,15 @@ const accounts = path ? (
     : undefined
 );
 
-if (!accounts) {
-  throw new Error('Accounts not defined!');
+if (!accounts || typeof accounts !== 'object') {
+  throw new Error('Accounts not defined or invalid!');
+}
+
+if (Array.isArray(accounts)) {
+  accounts = accounts.reduce((acc, cur) => {
+    acc[cur.accountName] = cur;
+    return acc;
+  }, {});
 }
 
 const hide = (client) => {
