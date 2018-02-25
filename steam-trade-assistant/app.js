@@ -1,7 +1,6 @@
-const PATH = process.env.DATA_PATH || '../../steamdata'
-const DATA = require(PATH)
+const DATA = require(process.env.DATA)
 
-const log = require('../logger')
+const log = require('winston')
 const rls = require('readline-sync')
 
 const Trader = require('../steam-trader/Trader')
