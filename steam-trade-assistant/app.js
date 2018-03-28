@@ -1,4 +1,4 @@
-const DATA = require(process.env.DATA)
+const DATA = require(process.env.DATA || require('os').homedir() + '/.steam.json');
 
 const log = require('winston')
 const rls = require('readline-sync')
