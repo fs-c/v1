@@ -67,7 +67,7 @@ function Trader (account) {
   })
 }
 
-// Really just a 'promisified' version of the original.
+// Really just a promisified version of the original.
 Trader.prototype.accept = function (offer) {
   return new Promise((resolve, reject) => {
     offer.accept(err => {
