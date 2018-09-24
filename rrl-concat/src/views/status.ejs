@@ -1,0 +1,9 @@
+<p>
+  <% if (locals.royal) { %>
+    RoyalRoad: <b><%= royal.data.message %></b> (<%= royal.timestamp %>)
+  <% } %>
+
+  <% if (locals.err) { %>
+    <b><%= err.message %></b>
+  <% } %>
+</p>
