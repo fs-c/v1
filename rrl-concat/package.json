@@ -10,16 +10,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@l1lly/royalroadl-api": "^0.13.7",
-    "debug": "^3.1.0",
+    "@l1lly/royalroadl-api": "^0.13.14",
+    "debug": "^3.2.6",
     "dotenv": "^5.0.1",
-    "koa": "^2.5.0",
-    "koa-bodyparser": "^4.2.0",
-    "koa-ejs": "^4.1.1",
+    "koa": "^2.6.2",
+    "koa-bodyparser": "^4.2.1",
+    "koa-ejs": "^4.1.2",
     "koa-logger": "^3.2.0",
     "koa-mount": "^3.0.0",
     "koa-route": "^3.2.0",
-    "koa-session": "^5.8.1",
-    "koa-static": "^4.0.2"
+    "koa-session": "^5.10.0",
+    "koa-static": "^4.0.3"
   }
 }
