@@ -160,7 +160,7 @@ app.use(route.post('/authenticate', async (ctx, next) => {
       ctx.flash = 'You don\'t have premium.';
     }
   } catch (err) {
-    debug('error for %o (%o)', username, err.message);
+    debug('error for %o (%o)', username, err);
 
     ctx.flash = err.data.message;
   }
