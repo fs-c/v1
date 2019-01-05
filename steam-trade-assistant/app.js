@@ -1,26 +1,13 @@
 const log = require('winston');
 const rls = require('readline-sync');
 
-const Trader = require('../Trader');
+const Trader = require('./Trader');
 
 const dataPath = process.env.DATA || require('path').join(
     require('os').homedir() + '/.steam.json',
 );
 
 let data;
-
-try {
-    data = require(dataPath)
-} catch (err) {
-    log.error(`expected a JSON file in ${dataPath}`);
-
-    return;
-}
-
-for (const name in data) {
-    if (rls.keyInYN(`Use account ${name}?`))
-        build(name);
-}
 
 const build = (name) => {
     const trader = new Trader(data[name]);
@@ -53,4 +40,17 @@ const build = (name) => {
                 );
         }
     });
+}
+
+try {
+    data = require(dataPath)
+} catch (err) {
+    log.error(`expected a JSON file in ${dataPath}`);
+
+    return;
+}
+
+for (const name in data) {
+    if (rls.keyInYN(`Use account ${name}?`))
+        build(name);
 }
