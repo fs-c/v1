@@ -4,6 +4,7 @@ const inDev = process.env.NODE_ENV !== 'production';
 
 const _ = require('koa-route');
 const app = new (require('koa'))();
+const { join, resolve } = require('path');
 const { URLSearchParams } = require('url');
 // TODO: Replace this bloated mess.
 const { get, post } = require('request-promise-native');
@@ -41,8 +42,10 @@ const generateString = (length) => {
     return text;
 };
 
-const updateToken = async (id, auth, code, redirect, refresh) => {
-    debug('updating token for %o', id);
+const updateToken = async (id, auth, code, redirect, refresh = false) => {
+    debug('updating token for %o (refresh: %o)', id, refresh);
+
+    debug({ auth, code, redirect });
 
     const form = refresh ? {
         refresh_token: code,
@@ -66,28 +69,41 @@ const updateToken = async (id, auth, code, redirect, refresh) => {
     return temp[id] = res;
 };
 
-require('koa-ejs')(app, {
-    viewExt: 'ejs',
-    root: require('path').join(__dirname, 'views'),
-});
-
 app.use(require('@koa/cors')());
-app.use(require('koa-static')('public', { maxage: inDev ? 0 : 60 * 1000 }));
 
 app.use(async (ctx, next) => {
     try {
         await next();
     } catch (err) {
         debug(err);
+
+        await ctx.render('error', { err });
     }
+});
+
+if (inDev) {
+    const staticDir = resolve(__dirname, '../static');
+
+    app.use(require('koa-static')(staticDir, { maxage: 0 }));
+}
+
+app.use(async (ctx, next) => {
+    const protocol = process.env.PROTOCOL || ctx.protocol;
+    const root = process.env.ROOT ? `/${process.env.ROOT}` : '/';
+
+    await require('koa-views')(join(__dirname, '/views'), {
+        extension: 'ejs',
+        options: {
+            base: `${protocol}://${ctx.host}${root}`,
+        },
+    })(ctx, next);
 });
 
 app.use(_.get('/from/:id', async (ctx, id, next) => {
     let data = temp[id];
 
     if (!data) {
-        ctx.status = 404;
-        return ctx.body = 'ERROR: Invalid id.'
+        throw new Error('Invalid ID');
     }
 
     if (data.updated + (data.expires_in * 1000) < Date.now()) {
@@ -102,7 +118,13 @@ app.use(_.get('/from/:id', async (ctx, id, next) => {
         },
     });
 
-    ctx.render('listening', { playback });
+    if (!playback) {
+        throw new Error('Failed fetching playback data');
+    }
+
+    debug(playback);
+
+    await ctx.render('listening', { playback });
 }));
 
 app.use(_.get('/add', async (ctx, next) => {
@@ -111,7 +133,7 @@ app.use(_.get('/add', async (ctx, next) => {
 
     temp[state] = true;
 
-    return ctx.redirect('https://accounts.spotify.com/authorize?' +
+    ctx.redirect('https://accounts.spotify.com/authorize?' +
         new URLSearchParams({
             scope,
             state,
@@ -127,8 +149,7 @@ app.use(_.get('/callback', async (ctx, next) => {
     const { code, state } = ctx.query;
 
     if (!temp[state]) {
-        ctx.status = '403';
-        return ctx.body = 'ERROR: State mismatch.';
+        throw new Error('State mismatch');
     }
 
     await updateToken(state, client.encoded, code, redirectURI);
@@ -136,4 +157,4 @@ app.use(_.get('/callback', async (ctx, next) => {
     ctx.redirect('/from/' + state);
 }));
 
-app.listen(8080);
+app.listen(process.env.PORT || 8080);
